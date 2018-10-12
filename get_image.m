@@ -1,5 +1,7 @@
-%% Camera input. Attach the XIMEA cam and then run this code to get a
+function im = get_image()
+%GET_IMAGE Get image from a XIMEA attached camera. Get a
 % single image from it saved to variable "im".
+
 vid = videoinput('gentl', 1, 'BGRA8Packed');
 src = getselectedsource(vid);
 
