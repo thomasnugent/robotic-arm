@@ -15,7 +15,7 @@ src.WhiteBalanceBlue = 1;
 src.WhiteBalanceGreen = 1;
 src.WhiteBalanceRed = 1;
 start(vid);
- 
+
 im = getdata(vid);
 imshow(im)
 %% TODO

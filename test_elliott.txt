@@ -1,1 +1,4 @@
 Test for my first commit
+
+
+13th October: set up my git branch and started wher Tom left off.

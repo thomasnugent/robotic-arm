@@ -1,0 +1,19 @@
+%% Cleaing:
+clc; clear all; close all;
+
+%% Variables:
+numImages = 2; % Number of images to take to calibrate.
+checkerSize = 22; %22mm sized checkerboard
+c = 1; % Keeps tracks of figure numbers.
+
+%% Step 1: Get images from camera and calibrate:
+cameraParams, image = getParams(numImages, checkerSize);
+
+%% Step 2: Get undistorted checkerboard images (Testing for now):
+for i = 1:numImages
+    undistortedImages(:, :, :, i) = undistortImage(images(:, :, :, j),...
+        cameraParams);
+    figure(c); c = c+1;
+    imshowpair(images(:, :, :, i),...
+        undistortedImages(:, :, :, i), 'montage');
+end
