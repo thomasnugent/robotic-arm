@@ -6,9 +6,9 @@ function [undistortedImages] = undistort(images, cameraParams, show)
 numImages = size(images, 4);
 for i = 1:numImages
     undistortedImages(:, :, :, i) = undistortImage(images(:, :, :, i),...
-        cameraParams);
+        cameraParams, 'OutputView', 'full');
     if (show == 1)
-    figure(i);
+    figure;
     imshowpair(images(:, :, :, i),...
         undistortedImages(:, :, :, i), 'montage');
     title(['Image', num2str(i), ': Original (left), Undistorted (right)']);

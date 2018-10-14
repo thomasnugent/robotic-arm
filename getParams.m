@@ -34,10 +34,10 @@ worldPoints = generateCheckerboardPoints(boardSize, checkerSize);
 
 if (show)
     % View reprojection errors
-    h1=figure(c); c=c+1; showReprojectionErrors(cameraParams);
+    h1=figure; showReprojectionErrors(cameraParams);
     
     % Visualize pattern locations
-    h2=figure(c); c=c+1; showExtrinsics(cameraParams, 'CameraCentric');
+    h2=figure; showExtrinsics(cameraParams, 'CameraCentric');
     
     % Display parameter estimation errors
     displayErrors(estimationErrors, cameraParams);
