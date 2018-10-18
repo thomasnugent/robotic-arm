@@ -10,12 +10,13 @@ vid.FramesPerTrigger = 1;
 triggerconfig(vid, 'manual');
 triggerconfig(vid, 'immediate');
 
-src.ExposureTime = 35000;
-src.WhiteBalanceBlue = 1;
-src.WhiteBalanceGreen = 1;
-src.WhiteBalanceRed = 1;
+src.ExposureTime = 35016;
+% src.WhiteBalanceBlue = 1;
+% src.WhiteBalanceGreen = 1;
+% src.WhiteBalanceRed = 1;
+src.BalanceWhiteAuto = 'Continuous';
 start(vid);
- 
+
 im = getdata(vid);
 imshow(im)
 %% TODO

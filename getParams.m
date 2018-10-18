@@ -1,15 +1,15 @@
-function [cameraParams, undistortedImages, imagesUsed, estimationErrors, ] ...
-    = get_images_and_calibrate(numImages, checkerSize)
+function [cameraParams, images] ...
+    = getParams(numImages, checkerSize, show)
 %GET_IMAGES_AND_CALIBRATE Captures 20 images of a checkerboard and
 %calibrates the camera
 
 % See Elliot's top down camera implementation
 c = 1; % Figure handles
-show = 0; % if show = 1; the errors and extrinsic figures are shown.
+% if show = 1; the errors and extrinsic figures are shown.
 for i = 1:numImages
     images(:, :, :, i) = get_image();
     if (i ~= numImages)
-        fprintf("Reorient checkerboard for image %d\n", i+1);
+        fprintf("Reorient checkerboard for image %d then press a button in cmd window\n", i+1);
         pause();
     end
 end
@@ -34,23 +34,13 @@ worldPoints = generateCheckerboardPoints(boardSize, checkerSize);
 
 if (show)
     % View reprojection errors
-    h1=figure(c); c=c+1; showReprojectionErrors(cameraParams);
+    h1=figure; showReprojectionErrors(cameraParams);
     
     % Visualize pattern locations
-    h2=figure(c); c=c+1; showExtrinsics(cameraParams, 'CameraCentric');
+    h2=figure; showExtrinsics(cameraParams, 'CameraCentric');
     
     % Display parameter estimation errors
     displayErrors(estimationErrors, cameraParams);
-end
-
-% For example, you can use the calibration data to remove effects of
-% lens distortion.
-for j = 1:numImages
-    undistortedImages(:, :, :, i) = undistortImage(images(:, :, :, j),...
-        cameraParams);
-    figure(c); c = c+1;
-    imshowpair(images(:, :, :, i),...
-        undistortedImages(:, :, :, i), 'montage');
 end
 
 end

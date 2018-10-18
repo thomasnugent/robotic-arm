@@ -1,0 +1,14 @@
+function [outputNodes] = getNodes(BW, startXY, endXY, show)
+
+prm = PRM(BW);        % create navigation object
+prm.plan()             % create roadmaps
+outputNodes = prm.query(startXY, endXY);  % animate path from this start location
+
+if (show)
+    figure(gcf);
+    for i = 1:length(outputNodes)
+        plot(
+% outputNodes = prm.path();
+
+
+end
