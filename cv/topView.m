@@ -1,4 +1,4 @@
-function [topViewImage, worldPoints, imagePoints] = topView(image, height, width, conv, show)
+function [topViewImage, worldPoints, imagePoints, H] = topView(image, height, width, conv, show)
 % This function will take an undistorted input image and
 % return the top down view of it
 
@@ -8,13 +8,14 @@ fraction = 0.3; %the fraction of white pixels to clear from binary image.
 st1 = strel('square', 4);
 st2 = strel('disk', 8);
 minLength = 0.8*min([size(image, 1), size(image, 2)]); %80% of image height
-fillGap = 200; % 20 pixels to fil gap
+fillGap = 400; % 20 pixels to fil gap
 thresh = 0.6; % threshold for houghpeaks
 numPeaks = 5; % number of peaks to get from houghpeaks
 
 %% Preprocessing: (Willchange depending on envirnoment)
 adj = imadjust(rgb2gray(image));
 BW = imbinarize(adj, 'global');
+BW = imcomplement(BW);
 numWhiteixelsPixels = sum(sum(BW));
 numToClear = ceil(fraction*numWhiteixelsPixels);
 BW = bwareaopen(BW, numToClear);
@@ -23,9 +24,10 @@ BW = imfill(BW, 'holes');
 BW = bwmorph(BW, 'remove');
 BW = imdilate(BW, st2);
 
-% BW = mask(image);
-figure; imshowpair(image, BW, 'montage'); % for debugging
-
+if (show)
+    figure; imshowpair(image, BW, 'montage'); % for debugging
+    title("For debugging scene mask");
+end
 %% Hough transform:
 [H, T, R] = hough(BW, 'ThetaResolution', 0.1);
 P  = houghpeaks(H,numPeaks,'threshold',ceil(thresh*max(H(:))));

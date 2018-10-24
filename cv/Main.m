@@ -22,7 +22,7 @@ pause();
 scene = get_image();
 
 fprintf("Getting undistorted images..., press button in terminal to continue\n");
-pause();
+% pause();
 undistImg = undistort(scene, cameraParams, 1);
 
 %% Step 3: Performing top down view of scene:
@@ -53,7 +53,7 @@ startXY = [30 30];
 endXY = [430 801];
 % find path:
 nodes = getNodes(BW, startXY, endXY, 1);
-worldCoordsNodes = nodes/conv;
+worldCoordsNodes = nodes/conv; 
 
 %% MOVE ROBOT ALONG THESE NODES!
-% Hello
+ 
