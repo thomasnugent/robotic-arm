@@ -1,4 +1,4 @@
-function im = get_image()
+function im = get_image(expTime)
 %GET_IMAGE Get image from a XIMEA attached camera. Get a
 % single image from it saved to variable "im".
 
@@ -10,7 +10,7 @@ vid.FramesPerTrigger = 1;
 triggerconfig(vid, 'manual');
 triggerconfig(vid, 'immediate');
 
-src.ExposureTime = 35016;
+src.ExposureTime = expTime;
 % src.WhiteBalanceBlue = 1;
 % src.WhiteBalanceGreen = 1;
 % src.WhiteBalanceRed = 1;
@@ -18,7 +18,7 @@ src.BalanceWhiteAuto = 'Continuous';
 start(vid);
 
 im = getdata(vid);
-imshow(im)
+% imshow(im)
 %% TODO
 % Do image processing (top down transform, undistorted, imbinarize,
 % iblobs to identify objects and their centroid+area, do motion planning

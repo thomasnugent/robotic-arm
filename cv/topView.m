@@ -62,7 +62,7 @@ end
 %% Performing transforms:
 % perform affine transform from world points to image points:
 H = fitgeotrans(imagePoints, worldPoints, 'projective');
-RA = imref2d([size(image, 1), size(image, 2)]);
+RA = imref2d([size(image, 2), size(image, 1)]);
 topViewImage = imwarp(image, H,'OutputView',RA);
 
 % SHOW THE ORTHONORMAL VIEW:
