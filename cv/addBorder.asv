@@ -1,0 +1,10 @@
+function [BW] = addBorder(BW, width, val)
+% adds a white/black border to a binary image given the val
+
+[row, col] = size(BW);
+BW(width, :) = val; %top row
+BW(row-width, :) = val; % bottom row
+BW(:, ) = val; % first column
+BW(:, col) = val; % last column
+
+end

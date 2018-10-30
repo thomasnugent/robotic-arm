@@ -1,6 +1,8 @@
 %% Cleaing:
 clc; close all; clear all; w = warning ('off','all');
 
+%% TASK VARIABLES!
+
 %% Variables:
 conv = 2; % 2 pixels for every mm.
 numImages = 5; % Number of images to take to calibrate.
@@ -10,6 +12,7 @@ A3height = 300; %mm
 A3width = 420; %mm
 penDiameter = conv*20; % 10mm into pixels
 
+%% Task 1 and 2: Common code:
 %% Step 1: Get images from camera and calibrate:
 try
     load cameraParams
@@ -45,46 +48,73 @@ undistImg = undistort(scene, cameraParams, 0);
 %% Step 3: Performing top down view of scene:
 fprintf("Getting top down view of images...\n");
 [topViewImage, worldPoints, imagePoints, H] = topView(undistImg, A3width, A3height, conv, 0);
-% topViewImage = imrotate(topViewImage, 90);
-figure; imshow(topViewImage);
 
-%% Step4: Segment objects in colour:
-% BW = sceneMask1(topViewImage); %************ MASK HERE ***************%
-% BW = bwareaopen(BW, 5000);
-Objects = getObjects(topViewImage, 0, 0);
+%% Step 4: Get object in Scene:
+[Objects, Goals] = getObjects(topViewImage, 0, 0);
 
+%% Step 5: Get a 2D scene:
 minPoint = 2; % point 2 from the getCorners array is the top left hence min point
 croppedImage = imcrop(topViewImage,...
     [worldPoints(minPoint, 1), worldPoints(minPoint, 2), A3height*conv, A3width*conv]);
-figure; imshow(croppedImage);
-scene2D = get2DScene(croppedImage, Objects);
+% [scene2D, Objects] = get2DScene(croppedImage, Objects, Goals);
+[scene2D, Objects] = get2DScene(croppedImage, Objects, 0);
 
-figure; imshowpair(croppedImage, scene2D, 
-%% Get object heights: DONE
+decided = 0;
+while(~decided)
+    taskIn = input('Which task number? [1, 2, 3] \n>>> ');
+    if (taskIn == 1 || taskIn == 2 || taskIn == 3)
+        task = taskIn;
+        decided = 1;
+    end
+end
 
-%% Clear the Scene:
+task = 1;
 
-%% Identify centroid of blue 35cm cyclinder:
+%% Task 1:
+if (task == 1)
+    %% Find path through image:
+    fprintf('Finding Path...\n');
+    %This will be a funciton:
+    cnt = 1;
+    for i = 1:length(Objects)
+        for j = 1:length(Objects(i).Shape)
+            if (Objects(i).Shape(j).Target == 1)
+                [currentScene, startXY] = editScene2D(scene2D, Objects(i).Shape(j).C3, 0); % does some centroid shifting
+                endXY = findNearestGoal(startXY, Goals);
+                nodes = getNodes(currentScene, round(startXY), round(endXY), 1);
+                worldCoordsNodes(cnt).Nodes = nodes/conv; cnt = cnt + 1;
+            end
+        end
+    end
+end
+
+%% Task 2:
+if (task == 2)
+    %% Step 6: Specify whether Object is a target and movable (TESTING FOR NOW)
+    Objects = promptMovable(Objects); % <-- Give it a go!
+    % Do the BRUCEY SEARCH!
+end
 
 
-%% Step 4: Object recogntion: (perhaps another view, horizontal/parallel to table?)
-% % if we take a horizontal view we can determin object heights? -> can find
-% % 35cm cylinder?
-% minPoint = 2; % point 2 from the getCorners array is the top left hence min point
-% croppedImage = imcrop(topViewImage,...
-%     [worldPoints(minPoint, 1), worldPoints(minPoint, 2), A3height*conv, A3width*conv]);
-% figure; imshow(croppedImage);
-%
-% %% Preprocess top down image
+figure;
+sceny = scene2D;
+for i = 1:200
+    sceny = bwmorph(sceny, 'thicken', 5);
+%     sceny = bwmorph(sceny, 'hbreak', 6);
+    imshow(sceny);
+end
+sceny = bwmorph(sceny, erode
+
+
+
+%% ANOTHER STEP HERE FOR MAKING THE IMAGE DILATED WITH THE PEN -> done before this is passed to getNodes.
+% EXAMPLE:
 % fprintf('Preprocessing top down images..., press button in terminal to continue\n');
-% pause();
 % BW = preprocessImage(croppedImage, penDiameter/2, 1);
-% % BW = (BW*3)-1
 % size(BW)
 %
 % %% Find path through image:
-% fprintf('Finding Path...,  press button in terminal to continue\n');
-% pause();
+% fprintf('Finding Path...\n");
 % % Image coordinates:
 % startXY = [30 30];
 % endXY = [430 801];
@@ -92,4 +122,4 @@ figure; imshowpair(croppedImage, scene2D,
 % nodes = getNodes(BW, startXY, endXY, 1);
 % worldCoordsNodes = nodes/conv;
 %
-% %% MOVE ROBOT ALONG THESE NODES!
+% MOVE ROBOT ALONG THESE NODES!

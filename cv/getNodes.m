@@ -1,14 +1,17 @@
 function [outputNodes] = getNodes(BW, startXY, endXY, show)
 
-prm = PRM(BW, 'npoints', 150);        % create navigation object
-prm.plan()             % create roadmaps
-outputNodes = prm.query(startXY, endXY);  % animate path from this start location
+BW = double(BW);
 
-if (show)
-    figure(gcf); hold on;
-    for i = 1:length(outputNodes)
-        plot(outputNodes(:, 1), outputNodes(:, 2), 'r', 'lineWidth', 2);
-    end
+prm = PRM(BW);        % create navigation object
+% prm.plot('goal', 'nooverlay');
+prm.plan();             % create roadmaps
+figure; imshow(BW); hold on;
+outputNodes = prm.path(startXY, endXY);  % animate path from this start location
+
+
+for i = 1:length(outputNodes)
+    plot(outputNodes(:, 1), outputNodes(:, 2), 'r', 'lineWidth', 2);
 end
 
+hold off;
 end
