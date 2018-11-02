@@ -1,0 +1,22 @@
+close all; clear;
+
+% Open COM 4
+err = hw.start(4);
+
+% Run robot if connection succeeds
+if err == 1
+    hw.set_speed(1,0.25);
+    hw.set_speed(2,0.25);
+    
+    for i=1:10
+       hw.set_position(1, 45);
+       hw.set_position(2,45);
+       pause(1);
+       hw.set_position(1,45);
+       hw.set_pos
+       thread
+    end
+end
+
+hw.disconnect();
+hw.stop();
