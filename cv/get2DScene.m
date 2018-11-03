@@ -3,7 +3,7 @@ function [scene2D, Objects] = get2DScene(Image, Objects, Goals)
 %% Internal variables:
 [nrows, ncols, ~] = size(Image);
 scene2D = zeros(nrows, ncols);
-scale = 2;
+scale = 1;
 %% Step 1: getting the centroids of the top faces and whole objects.
 % Will use an interpolation to get the base face centroid using the
 % total objects centroid and top face centroid.

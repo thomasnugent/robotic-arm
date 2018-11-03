@@ -11,22 +11,24 @@ c = 1; % Keeps tracks of figure numbers.
 A3height = 300; %mm
 A3width = 420; %mm
 penDiameter = conv*20; % 10mm into pixels
+Exposure = 230000;
+
 
 %% Task 1 and 2: Common code:
 %% Step 1: Get images from camera and calibrate:
 try
-    load cameraParams
-    load scene1
+    load cameraParamsHome
+    load scene1Home
 end
 
 if (exist('cameraParams') ~= 1)
     try
-        load calibrationImages
+        load calibrationImagesHome
     end
     if (exist('calibrationImages') ~= 1)
         fprintf("Calibrating camera, place checkerboard into view and press a button in terminal...\n");
         pause();
-        [cameraParams, calibrationImages] = getParams(numImages, checkerSize, 0);
+        [cameraParams, calibrationImages] = getParams(numImages, checkerSize,Exposure, 0);
     end
 end
 
@@ -59,14 +61,14 @@ croppedImage = imcrop(topViewImage,...
 % [scene2D, Objects] = get2DScene(croppedImage, Objects, Goals);
 [scene2D, Objects] = get2DScene(croppedImage, Objects, 0);
 
-decided = 0;
-while(~decided)
-    taskIn = input('Which task number? [1, 2, 3] \n>>> ');
-    if (taskIn == 1 || taskIn == 2 || taskIn == 3)
-        task = taskIn;
-        decided = 1;
-    end
-end
+% decided = 0;
+% while(~decided)
+%     taskIn = input('Which task number? [1, 2, 3] \n>>> ');
+%     if (taskIn == 1 || taskIn == 2 || taskIn == 3)
+%         task = taskIn;
+%         decided = 1;
+%     end
+% end
 
 task = 1;
 
@@ -80,7 +82,7 @@ if (task == 1)
         for j = 1:length(Objects(i).Shape)
             if (Objects(i).Shape(j).Target == 1)
                 [currentScene, startXY] = editScene2D(scene2D, Objects(i).Shape(j).C3, 0); % does some centroid shifting
-                endXY = findNearestGoal(startXY, Goals);
+                [endXY, Goals] = findNearestGoal(startXY, Goals);
                 nodes = getNodes(currentScene, round(startXY), round(endXY), 1);
                 worldCoordsNodes(cnt).Nodes = nodes/conv; cnt = cnt + 1;
             end
@@ -96,17 +98,45 @@ if (task == 2)
 end
 
 
-figure;
-sceny = scene2D;
-for i = 1:50
-    sceny = bwmorph(sceny, 'thicken', 5);
-%     sceny = bwmorph(sceny, 'hbreak', 6);
-    imshow(sceny);
+%% Robot
+num = 1; %Path number
+L1 = 280;
+L2 = 215;
+shiftX = 170;
+shiftY = -220;
+worldCoordsNodes(num).Nodes(:, 1) = shiftX + worldCoordsNodes(num).Nodes(:, 1);
+worldCoordsNodes(num).Nodes(:, 2) = shiftY + worldCoordsNodes(num).Nodes(:, 2);
+for i = 1:length(worldCoordsNodes(num).Nodes)
+    poses = get_inverse_kinematics(L1, L2, worldCoordsNodes(num).Nodes(i, 1), worldCoordsNodes(num).Nodes(i, 2));
+    Poses(i).Pose = poses;
 end
-sceny = bwmorph(sceny, 'erode', 5);
-sceny = addBorder(sceny, 10, 1);
-imshow(sceny);
 
+
+%% Vernoli diagram:
+% figure;
+% sceny = scene2D;
+% for i = 1:50
+%     sceny = bwmorph(sceny, 'thicken', 5);
+% %     sceny = bwmorph(sceny, 'hbreak', 6);
+%     imshow(sceny);
+% end
+% sceny = bwmorph(sceny, 'erode', 5);
+% sceny = addBorder(sceny, 10, 1);
+% imshow(sceny);
+
+%% Print centroids
+% figure; imshow(scene2D); hold on;
+% for i = 1:length(Objects)
+%     for j = 1:length(Objects(i).Shape)
+%         x = Objects(i).Shape(j).C3(1);
+%         y = Objects(i).Shape(j).C3(2);
+%         plot(x, y, 'r.', 'LineWidth', 30);
+%         str = sprintf("[%s %2.0f %s] @ [x, y] = [%2.0f, %2.0f]\n",...
+%             Objects(i).Name, Objects(i).Shape(j).Height, Objects(i).Shape(j).Type, x/conv, y/conv);
+%         fprintf(str);
+%     end
+% end
+% hold off;
 
 %% ANOTHER STEP HERE FOR MAKING THE IMAGE DILATED WITH THE PEN -> done before this is passed to getNodes.
 % EXAMPLE:

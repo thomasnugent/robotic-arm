@@ -76,6 +76,7 @@ for i = 1:length(Objects)
             if (i == length(Objects)) % This is a goal!
                 Goals(cnt).Centroid = shift + rp.Centroid;
                 Goals(cnt).Radius = radii;
+                Goals(cnt).Filled = 0;
                 cnt = cnt+1;
                 continue;
             end

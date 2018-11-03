@@ -1,5 +1,5 @@
 function [cameraParams, images] ...
-    = getParams(numImages, checkerSize, show)
+    = getParams(numImages, checkerSize, exp, show)
 %GET_IMAGES_AND_CALIBRATE Captures 20 images of a checkerboard and
 %calibrates the camera
 
@@ -7,7 +7,7 @@ function [cameraParams, images] ...
 c = 1; % Figure handles
 % if show = 1; the errors and extrinsic figures are shown.
 for i = 1:numImages
-    images(:, :, :, i) = get_image();
+    images(:, :, :, i) = get_image(exp);
     if (i ~= numImages)
         fprintf("Reorient checkerboard for image %d then press a button in cmd window\n", i+1);
         pause();
